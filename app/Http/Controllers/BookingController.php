@@ -15,6 +15,8 @@ use App\Models\RoomType;
 use App\Services\TripayService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
@@ -204,6 +206,27 @@ class BookingController extends Controller
             return back()->withInput()->with('error', 'Maaf, tanggal yang dipilih sedang dalam jadwal pemeliharaan internal atau tidak tersedia.');
         }
 
+        // Cek ketersediaan kuota unit untuk room_type_id ini (Mencegah Overbooking / Double Booking)
+        $bookedUnitsCount = BookingRoom::where('room_type_id', $roomType->id)
+            ->whereHas('booking', function ($q) use ($checkIn, $checkOut) {
+                $q->where(function ($statusQuery) {
+                    $statusQuery->whereIn('status', ['dp_dibayar', 'lunas', 'check_in'])
+                        ->orWhere(function ($pendingQuery) {
+                            $pendingQuery->where('status', 'menunggu_pembayaran')
+                                ->where('hold_expires_at', '>', now());
+                        });
+                })
+                    ->where('check_in', '<', $checkOut->toDateString())
+                    ->where('check_out', '>', $checkIn->toDateString());
+            })
+            ->sum('jumlah_kamar');
+
+        $maxUnits = $roomType->jumlah_unit ?? 1;
+        $availableUnits = $maxUnits - $bookedUnitsCount;
+        if ($availableUnits < 1) {
+            return back()->withInput()->with('error', 'Maaf, seluruh unit untuk paket/kamar ini sudah penuh dipesan pada tanggal yang Anda pilih. Silakan pilih tanggal lain.');
+        }
+
         // Kalkulasi biaya
         $roomPricePerNight = $roomType->harga_dasar;
         $roomSubtotal = $roomPricePerNight * $nights;
@@ -247,86 +270,103 @@ class BookingController extends Controller
         $holdHours = (int) Policy::get('hold_duration_hours', 24);
         $holdExpiresAt = now()->addHours($holdHours);
 
-        // Generate Kode Booking
+        // Generate Kode Booking Unik (6 Karakter Acak + Verifikasi Duplikasi)
         $dateStr = now()->format('Ymd');
-        $randomSeq = strtoupper(Str::random(4));
-        $kodeBooking = "VBB-{$dateStr}-{$randomSeq}";
+        do {
+            $randomSeq = strtoupper(Str::random(6));
+            $kodeBooking = "VBB-{$dateStr}-{$randomSeq}";
+        } while (Booking::where('kode_booking', $kodeBooking)->exists());
 
-        // 1. Buat Record Booking
-        $booking = Booking::create([
-            'user_id' => auth()->check() ? auth()->id() : null,
-            'kode_booking' => $kodeBooking,
-            'created_by' => null, // Dibuat tamu lewat web
-            'nama_tamu' => $request->nama_tamu,
-            'no_wa' => $request->no_wa,
-            'email' => $request->email,
-            'check_in' => $checkIn->toDateString(),
-            'check_out' => $checkOut->toDateString(),
-            'jumlah_tamu' => $request->jumlah_tamu,
-            'sumber' => 'website',
-            'total_harga' => $totalHarga,
-            'nominal_dp' => $nominalDp,
-            'kode_unik' => $kodeUnik,
-            'nominal_transfer' => $nominalTransfer,
-            'status' => 'menunggu_pembayaran',
-            'hold_expires_at' => $holdExpiresAt,
-            'catatan' => $request->catatan,
-        ]);
+        try {
+            // DB Transaction untuk menjamin integritas data
+            $booking = DB::transaction(function () use (
+                $request, $roomType, $checkIn, $checkOut, $nights,
+                $roomPricePerNight, $roomSubtotal, $addOnItems, $totalHarga,
+                $nominalDp, $kodeUnik, $nominalTransfer, $holdExpiresAt, $kodeBooking
+            ) {
+                // 1. Buat Record Booking
+                $booking = Booking::create([
+                    'user_id' => auth()->check() ? auth()->id() : null,
+                    'kode_booking' => $kodeBooking,
+                    'created_by' => null, // Dibuat tamu lewat web
+                    'nama_tamu' => $request->nama_tamu,
+                    'no_wa' => $request->no_wa,
+                    'email' => $request->email,
+                    'check_in' => $checkIn->toDateString(),
+                    'check_out' => $checkOut->toDateString(),
+                    'jumlah_tamu' => $request->jumlah_tamu,
+                    'sumber' => 'website',
+                    'total_harga' => $totalHarga,
+                    'nominal_dp' => $nominalDp,
+                    'kode_unik' => $kodeUnik,
+                    'nominal_transfer' => $nominalTransfer,
+                    'status' => 'menunggu_pembayaran',
+                    'hold_expires_at' => $holdExpiresAt,
+                    'catatan' => $request->catatan,
+                ]);
 
-        // 2. Buat BookingRoom
-        BookingRoom::create([
-            'booking_id' => $booking->id,
-            'room_type_id' => $roomType->id,
-            'room_id' => null, // Ditugaskan admin saat check-in
-            'jumlah_kamar' => 1,
-            'harga_per_malam' => $roomPricePerNight,
-            'jumlah_malam' => $nights,
-            'subtotal' => $roomSubtotal,
-        ]);
+                // 2. Buat BookingRoom
+                BookingRoom::create([
+                    'booking_id' => $booking->id,
+                    'room_type_id' => $roomType->id,
+                    'room_id' => null, // Ditugaskan admin saat check-in
+                    'jumlah_kamar' => 1,
+                    'harga_per_malam' => $roomPricePerNight,
+                    'jumlah_malam' => $nights,
+                    'subtotal' => $roomSubtotal,
+                ]);
 
-        // 3. Buat BookingAddOns
-        foreach ($addOnItems as $item) {
-            BookingAddOn::create([
-                'booking_id' => $booking->id,
-                'add_on_id' => $item['add_on']->id,
-                'jumlah' => $item['jumlah'],
-                'harga_satuan' => $item['harga_satuan'],
-                'subtotal' => $item['subtotal'],
-            ]);
+                // 3. Buat BookingAddOns
+                foreach ($addOnItems as $item) {
+                    BookingAddOn::create([
+                        'booking_id' => $booking->id,
+                        'add_on_id' => $item['add_on']->id,
+                        'jumlah' => $item['jumlah'],
+                        'harga_satuan' => $item['harga_satuan'],
+                        'subtotal' => $item['subtotal'],
+                    ]);
+                }
+
+                // 4. Catat Log
+                BookingLog::log($booking->id, 'create_booking', null, 'menunggu_pembayaran');
+
+                // 5. Buat Record Payment
+                $paymentType = ($request->skema_bayar === 'dp') ? 'dp' : 'pembayaran_penuh';
+                $payment = Payment::create([
+                    'booking_id' => $booking->id,
+                    'verified_by' => null,
+                    'jenis' => $paymentType,
+                    'metode_pembayaran' => $request->metode_pembayaran,
+                    'nominal' => $nominalTransfer,
+                    'status' => 'menunggu_konfirmasi',
+                ]);
+
+                // 6. Jika metode Tripay, request closed payment ke TripayService
+                if ($request->metode_pembayaran !== 'manual_transfer') {
+                    $this->tripayService->createClosedTransaction($booking, $payment, $request->metode_pembayaran);
+                }
+
+                // 7. Notifikasi Awal
+                $waMsg = "Halo {$booking->nama_tamu}, terima kasih telah melakukan pemesanan di Villa Bukit Bunga Pacet. Kode Reservasi Anda: {$booking->kode_booking}. Total tagihan: Rp ".number_format($nominalTransfer, 0, ',', '.').'. Silakan selesaikan pembayaran sebelum batas hold: '.$holdExpiresAt->format('d M Y H:i').' WIB.';
+                Notification::create([
+                    'booking_id' => $booking->id,
+                    'jenis' => 'wa_konfirmasi',
+                    'no_tujuan' => $booking->no_wa,
+                    'pesan' => $waMsg,
+                    'status' => 'sent',
+                    'sent_at' => now(),
+                ]);
+
+                return $booking;
+            });
+
+            return redirect()->route('booking.invoice', $booking->kode_booking)
+                ->with('success', 'Pemesanan Anda berhasil dibuat! Silakan selesaikan pembayaran berikut.');
+        } catch (\Throwable $e) {
+            Log::error('Gagal memproses pembuatan pesanan: '.$e->getMessage(), ['exception' => $e]);
+
+            return back()->withInput()->with('error', 'Terjadi kendala saat memproses pesanan Anda. Silakan coba kembali atau hubungi pengelola.');
         }
-
-        // 4. Catat Log
-        BookingLog::log($booking->id, 'create_booking', null, 'menunggu_pembayaran');
-
-        // 5. Buat Record Payment
-        $paymentType = ($request->skema_bayar === 'dp') ? 'dp' : 'pembayaran_penuh';
-        $payment = Payment::create([
-            'booking_id' => $booking->id,
-            'verified_by' => null,
-            'jenis' => $paymentType,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'nominal' => $nominalTransfer,
-            'status' => 'menunggu_konfirmasi',
-        ]);
-
-        // 6. Jika metode Tripay, request closed payment ke TripayService
-        if ($request->metode_pembayaran !== 'manual_transfer') {
-            $this->tripayService->createClosedTransaction($booking, $payment, $request->metode_pembayaran);
-        }
-
-        // 7. Notifikasi Awal
-        $waMsg = "Halo {$booking->nama_tamu}, terima kasih telah melakukan pemesanan di Villa Bukit Bunga Pacet. Kode Reservasi Anda: {$booking->kode_booking}. Total tagihan: Rp ".number_format($nominalTransfer, 0, ',', '.').'. Silakan selesaikan pembayaran sebelum batas hold: '.$holdExpiresAt->format('d M Y H:i').' WIB.';
-        Notification::create([
-            'booking_id' => $booking->id,
-            'jenis' => 'wa_konfirmasi',
-            'no_tujuan' => $booking->no_wa,
-            'pesan' => $waMsg,
-            'status' => 'sent',
-            'sent_at' => now(),
-        ]);
-
-        return redirect()->route('booking.invoice', $booking->kode_booking)
-            ->with('success', 'Pemesanan Anda berhasil dibuat! Silakan selesaikan pembayaran berikut.');
     }
 
     /**
@@ -358,21 +398,32 @@ class BookingController extends Controller
     {
         $booking = Booking::where('kode_booking', $kodeBooking)->firstOrFail();
 
+        // Validasi status reservasi & kedaluwarsa hold
+        if ($booking->status !== 'menunggu_pembayaran') {
+            return back()->with('error', 'Status pemesanan ini sudah tidak dalam tahap menunggu pembayaran.');
+        }
+
+        if ($booking->hold_expires_at && Carbon::parse($booking->hold_expires_at)->isPast()) {
+            return back()->with('error', 'Batas waktu pembayaran (hold duration) telah berakhir. Silakan lakukan pemesanan ulang.');
+        }
+
         $request->validate([
             'file_bukti' => 'required|image|mimes:jpeg,png,jpg|max:3072',
             'tanggal_transfer' => 'required|date',
         ]);
 
+        $payment = $booking->payments()->where('metode_pembayaran', 'manual_transfer')->latest()->first();
+        if (! $payment) {
+            return back()->with('error', 'Tagihan pembayaran transfer manual tidak ditemukan untuk pemesanan ini.');
+        }
+
         $path = $request->file('file_bukti')->store('proofs', 'public');
 
-        $payment = $booking->payments()->latest()->first();
-        if ($payment) {
-            $payment->update([
-                'file_bukti' => '/storage/'.$path,
-                'tanggal_transfer' => $request->tanggal_transfer,
-                'status' => 'menunggu_konfirmasi',
-            ]);
-        }
+        $payment->update([
+            'file_bukti' => '/storage/'.$path,
+            'tanggal_transfer' => $request->tanggal_transfer,
+            'status' => 'menunggu_konfirmasi',
+        ]);
 
         BookingLog::log($booking->id, 'upload_transfer_proof', null, 'menunggu_verifikasi_admin');
 
@@ -389,6 +440,32 @@ class BookingController extends Controller
             $booking = Booking::where('kode_booking', trim($request->kode_booking))
                 ->with(['bookingRooms.roomType', 'bookingAddOns.addOn', 'payments'])
                 ->first();
+
+            if ($booking) {
+                // Periksa apakah user yang sedang login adalah pemilik atau staf admin/penjaga
+                $isAuthorized = false;
+                if (auth()->check()) {
+                    $user = auth()->user();
+                    if ($user->isAdmin() || $user->isPenjaga() || ($booking->user_id && $user->id === $booking->user_id)) {
+                        $isAuthorized = true;
+                    }
+                }
+
+                // Jika pengunjung publik (bukan staf atau pemilik akun asli), sensor info kontak
+                if (! $isAuthorized) {
+                    $phone = $booking->no_wa;
+                    if (strlen($phone) > 6) {
+                        $booking->no_wa = substr($phone, 0, 4).str_repeat('*', max(strlen($phone) - 7, 3)).substr($phone, -3);
+                    }
+                    if ($booking->email) {
+                        $parts = explode('@', $booking->email);
+                        if (count($parts) === 2) {
+                            $namePart = $parts[0];
+                            $booking->email = substr($namePart, 0, 1).str_repeat('*', max(strlen($namePart) - 1, 3)).'@'.$parts[1];
+                        }
+                    }
+                }
+            }
         }
 
         return view('pages.track', compact('booking'));

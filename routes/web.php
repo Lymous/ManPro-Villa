@@ -28,15 +28,23 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/invoice/{kodeBooking}', [BookingController::class, 'invoice'])->name('booking.invoice');
 Route::post('/invoice/{kodeBooking}/upload-proof', [BookingController::class, 'uploadManualProof'])->name('booking.upload_proof');
-Route::get('/lacak-pesanan', [BookingController::class, 'trackBooking'])->name('booking.track');
+Route::get('/lacak-pesanan', [BookingController::class, 'trackBooking'])
+    ->middleware('throttle:20,1')
+    ->name('booking.track');
 Route::get('/tentang-kami', function () {
     return view('pages.about');
 })->name('about');
 
-// Tripay Sandbox Callback & Instant Simulator
+// Tripay Sandbox Callback (CSRF Dikecualikan di bootstrap/app.php)
 Route::post('/api/tripay/callback', [TripayCallbackController::class, 'handle'])->name('tripay.callback');
 Route::post('/tripay/callback', [TripayCallbackController::class, 'handle']);
-Route::get('/tripay/simulate-paid/{reference}', [TripayCallbackController::class, 'simulatePaid'])->name('tripay.simulate_paid');
+
+// Tripay Instant Simulator - HANYA aktif di local environment untuk Pengelola Villa
+if (app()->environment('local')) {
+    Route::get('/tripay/simulate-paid/{reference}', [TripayCallbackController::class, 'simulatePaid'])
+        ->middleware(['auth', 'role:admin,penjaga'])
+        ->name('tripay.simulate_paid');
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +72,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
 | Panel Pengelola (Admin & Penjaga Villa)
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin,penjaga'])->group(function () {
     // Dashboard & Kalender Operasional (Bisa diakses Admin & Penjaga)
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 

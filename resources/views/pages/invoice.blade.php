@@ -100,15 +100,15 @@
                     </span>
                 </div>
 
-                <!-- Sandbox Instant Simulation Button (Testing Mode) -->
-                @if($booking->status === 'menunggu_pembayaran' && $latestPayment)
+                <!-- Sandbox Instant Simulation Button (Testing Mode - Hanya Staf & Lingkungan Lokal) -->
+                @if(app()->environment('local') && auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isPenjaga()) && $booking->status === 'menunggu_pembayaran' && $latestPayment)
                 <div class="pt-2">
                     <a href="{{ route('tripay.simulate_paid', $latestPayment->tripay_reference ?? $latestPayment->id) }}" 
                        class="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-colors">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>[Sandbox Mode] Simulasi Pembayaran Sukses (Testing Langsung)</span>
+                        <span>[Staff Testing] Simulasi Pembayaran Sukses</span>
                     </a>
-                    <span class="text-[10px] text-gray-400 text-center block mt-1">Gunakan tombol di atas untuk menguji flow verifikasi pembayaran instan secara lokal.</span>
+                    <span class="text-[10px] text-gray-400 text-center block mt-1">Hanya terlihat oleh Admin/Penjaga di lingkungan lokal untuk pengujian.</span>
                 </div>
                 @endif
             </div>

@@ -31,15 +31,26 @@ class TripayCallbackController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid JSON'], 400);
         }
 
-        // Verifikasi signature jika di environment produksi
         $privateKey = config('tripay.private_key');
-        if ($privateKey && $privateKey !== 'DEV-MOCK-PRIVATE-KEY' && $signature) {
+
+        // Verifikasi signature jika private key terkonfigurasi
+        if ($privateKey && $privateKey !== 'DEV-MOCK-PRIVATE-KEY') {
+            if (! $signature) {
+                Log::warning('Tripay webhook rejected: Missing X-Callback-Signature header.');
+
+                return response()->json(['success' => false, 'message' => 'Missing signature header'], 403);
+            }
+
             $computedSignature = hash_hmac('sha256', $json, $privateKey);
-            if ($computedSignature !== $signature) {
+            if (! hash_equals($computedSignature, $signature)) {
                 Log::warning('Tripay webhook signature mismatch!');
 
                 return response()->json(['success' => false, 'message' => 'Invalid signature'], 403);
             }
+        }
+
+        if (empty($data['reference']) || empty($data['status'])) {
+            return response()->json(['success' => false, 'message' => 'Incomplete callback payload'], 422);
         }
 
         $result = $this->tripayService->handleCallback($data);
@@ -49,15 +60,19 @@ class TripayCallbackController extends Controller
 
     /**
      * Endpoint Simulasi Cepat (Testing Sandbox)
+     * Hanya diizinkan pada local environment untuk Admin / Penjaga
      */
     public function simulatePaid(string $reference)
     {
+        abort_unless(app()->environment('local'), 403, 'Simulasi pembayaran hanya diizinkan di lingkungan lokal.');
+        abort_unless(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isPenjaga()), 403, 'Akses ditolak.');
+
         $payment = Payment::where('tripay_reference', $reference)
             ->orWhere('id', $reference)
             ->firstOrFail();
 
         $this->tripayService->handleCallback([
-            'reference' => $payment->tripay_reference,
+            'reference' => $payment->tripay_reference ?? 'MOCK-'.$payment->id,
             'status' => 'PAID',
         ]);
 
