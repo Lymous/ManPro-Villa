@@ -53,7 +53,7 @@ class PaymentManagementController extends Controller
             $booking->id,
             'verify_payment',
             'menunggu_konfirmasi',
-            "Pembayaran Rp " . number_format($payment->nominal, 0, ',', '.') . " diverifikasi oleh " . auth()->user()->name
+            'Pembayaran Rp '.number_format($payment->nominal, 0, ',', '.').' diverifikasi oleh '.auth()->user()->name
         );
 
         // Notifikasi WA
@@ -61,12 +61,12 @@ class PaymentManagementController extends Controller
             'booking_id' => $booking->id,
             'jenis' => $newStatus === 'lunas' ? 'wa_lunas' : 'wa_konfirmasi',
             'no_tujuan' => $booking->no_wa,
-            'pesan' => "Halo {$booking->nama_tamu}, pembayaran transfer Anda sebesar Rp " . number_format($payment->nominal, 0, ',', '.') . " telah diverifikasi oleh admin kami. Status booking: " . strtoupper($newStatus) . ".",
+            'pesan' => "Halo {$booking->nama_tamu}, pembayaran transfer Anda sebesar Rp ".number_format($payment->nominal, 0, ',', '.').' telah diverifikasi oleh admin kami. Status booking: '.strtoupper($newStatus).'.',
             'status' => 'sent',
             'sent_at' => now(),
         ]);
 
-        return back()->with('success', "Pembayaran sebesar Rp " . number_format($payment->nominal, 0, ',', '.') . " berhasil diverifikasi.");
+        return back()->with('success', 'Pembayaran sebesar Rp '.number_format($payment->nominal, 0, ',', '.').' berhasil diverifikasi.');
     }
 
     public function reject(Request $request, $id)
@@ -84,7 +84,7 @@ class PaymentManagementController extends Controller
             $payment->booking_id,
             'reject_payment',
             'menunggu_konfirmasi',
-            "Ditolak oleh " . auth()->user()->name . ". Alasan: " . ($request->alasan ?? 'Bukti tidak valid')
+            'Ditolak oleh '.auth()->user()->name.'. Alasan: '.($request->alasan ?? 'Bukti tidak valid')
         );
 
         return back()->with('warning', 'Bukti pembayaran ditandai sebagai ditolak.');
@@ -119,7 +119,7 @@ class PaymentManagementController extends Controller
             $booking->id,
             'settlement_added',
             null,
-            "Pembayaran {$request->jenis} Rp " . number_format($request->nominal, 0, ',', '.') . " dicatat oleh " . auth()->user()->name
+            "Pembayaran {$request->jenis} Rp ".number_format($request->nominal, 0, ',', '.').' dicatat oleh '.auth()->user()->name
         );
 
         return back()->with('success', "Pembayaran {$request->jenis} berhasil dicatat.");

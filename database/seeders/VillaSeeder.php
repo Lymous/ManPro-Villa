@@ -10,7 +10,6 @@ use App\Models\RoomType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class VillaSeeder extends Seeder
 {
@@ -262,7 +261,7 @@ class VillaSeeder extends Seeder
                         'file_path' => $photoUrl,
                     ],
                     [
-                        'caption' => 'Sudut Villa Bukit Bunga - ' . ($idx + 1),
+                        'caption' => 'Sudut Villa Bukit Bunga - '.($idx + 1),
                         'urutan' => $idx + 1,
                         'is_primary' => $idx === 0,
                     ]

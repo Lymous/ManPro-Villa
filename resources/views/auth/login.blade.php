@@ -3,13 +3,13 @@
 @section('title', 'Masuk ke Akun - Villa Bukit Bunga Pacet')
 
 @section('content')
-<div class="min-h-[75vh] flex items-center justify-center px-4 py-16">
-    <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200/80 shadow-2xl p-8 sm:p-10 relative overflow-hidden">
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12 sm:py-16">
+    <div class="w-full max-w-md bg-white rounded-3xl border border-gray-200/80 shadow-2xl p-5 sm:p-10 relative overflow-hidden">
         <div class="text-center mb-8">
             <a href="{{ route('home') }}" class="inline-block mb-4 group">
                 <img src="{{ asset('logo/logo.svg') }}" alt="Villa Bukit Bunga" class="w-16 h-16 rounded-2xl object-cover mx-auto shadow-md group-hover:scale-105 transition-transform duration-300">
             </a>
-            <h1 class="font-display text-2xl font-bold text-primary">Masuk ke Akun Anda</h1>
+            <h1 class="font-display text-xl sm:text-2xl font-bold text-primary">Masuk ke Akun Anda</h1>
             <p class="text-xs text-gray-500 mt-1">Masuk untuk melanjutkan reservasi villa atau mengelola pesanan Anda</p>
         </div>
 

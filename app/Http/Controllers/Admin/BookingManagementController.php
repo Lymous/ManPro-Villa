@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AddOn;
-use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\BookingAddOn;
 use App\Models\BookingLog;
@@ -33,8 +32,8 @@ class BookingManagementController extends Controller
             $s = $request->search;
             $query->where(function ($q) use ($s) {
                 $q->where('kode_booking', 'like', "%{$s}%")
-                  ->orWhere('nama_tamu', 'like', "%{$s}%")
-                  ->orWhere('no_wa', 'like', "%{$s}%");
+                    ->orWhere('nama_tamu', 'like', "%{$s}%")
+                    ->orWhere('no_wa', 'like', "%{$s}%");
             });
         }
 
@@ -100,7 +99,7 @@ class BookingManagementController extends Controller
         $addOnItems = [];
         if (is_array($selectedAddOns)) {
             foreach ($selectedAddOns as $addonId => $qty) {
-                $qty = (int)$qty;
+                $qty = (int) $qty;
                 if ($qty > 0) {
                     $addon = AddOn::find($addonId);
                     if ($addon) {
@@ -182,11 +181,11 @@ class BookingManagementController extends Controller
             $booking->id,
             'manual_create_by_admin',
             null,
-            "Dibuat manual oleh " . auth()->user()->name . " (Sumber: {$request->sumber})"
+            'Dibuat manual oleh '.auth()->user()->name." (Sumber: {$request->sumber})"
         );
 
         return redirect()->route('admin.bookings.show', $booking->id)
-            ->with('success', 'Reservasi manual berhasil dibuat dengan kode: ' . $booking->kode_booking);
+            ->with('success', 'Reservasi manual berhasil dibuat dengan kode: '.$booking->kode_booking);
     }
 
     /**
@@ -262,7 +261,7 @@ class BookingManagementController extends Controller
             $newStatus
         );
 
-        return back()->with('success', "Status reservasi berhasil diubah menjadi: " . $booking->status_label);
+        return back()->with('success', 'Status reservasi berhasil diubah menjadi: '.$booking->status_label);
     }
 
     /**
@@ -284,7 +283,7 @@ class BookingManagementController extends Controller
         }
 
         $oldDates = "{$booking->check_in->format('d/m/Y')} s/d {$booking->check_out->format('d/m/Y')}";
-        $newDates = Carbon::parse($request->new_check_in)->format('d/m/Y') . " s/d " . Carbon::parse($request->new_check_out)->format('d/m/Y');
+        $newDates = Carbon::parse($request->new_check_in)->format('d/m/Y').' s/d '.Carbon::parse($request->new_check_out)->format('d/m/Y');
 
         $booking->update([
             'check_in' => $request->new_check_in,
@@ -297,7 +296,7 @@ class BookingManagementController extends Controller
             $booking->id,
             'reschedule_dates',
             $oldDates,
-            "Diubah ke {$newDates}. Alasan: " . ($request->alasan ?? 'Permintaan Tamu')
+            "Diubah ke {$newDates}. Alasan: ".($request->alasan ?? 'Permintaan Tamu')
         );
 
         // Notifikasi WA

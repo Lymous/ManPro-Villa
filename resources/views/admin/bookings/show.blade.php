@@ -24,10 +24,10 @@
         </div>
 
         <!-- Quick Status Update Form -->
-        <div class="flex flex-wrap items-center gap-2">
-            <form action="{{ route('admin.bookings.update_status', $booking->id) }}" method="POST" class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <form action="{{ route('admin.bookings.update_status', $booking->id) }}" method="POST" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 @csrf
-                <select name="status" class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold outline-none">
+                <select name="status" class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold outline-none flex-1 sm:flex-initial">
                     <option value="menunggu_pembayaran" {{ $booking->status === 'menunggu_pembayaran' ? 'selected' : '' }}>Menunggu Pembayaran</option>
                     <option value="dp_dibayar" {{ $booking->status === 'dp_dibayar' ? 'selected' : '' }}>DP Dibayar</option>
                     <option value="lunas" {{ $booking->status === 'lunas' ? 'selected' : '' }}>Lunas</option>
@@ -36,11 +36,11 @@
                     <option value="batal" {{ $booking->status === 'batal' ? 'selected' : '' }}>Batalkan Pesanan</option>
                 </select>
                 <button type="submit" class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary-light transition-colors">
-                    Perbarui Status
+                    Perbarui
                 </button>
             </form>
 
-            <a href="{{ route('booking.invoice', $booking->kode_booking) }}" target="_blank" class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50">
+            <a href="{{ route('booking.invoice', $booking->kode_booking) }}" target="_blank" class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center justify-center">
                 <i class="fa-solid fa-receipt mr-1"></i> Buka Invoice
             </a>
         </div>
@@ -51,20 +51,20 @@
         <!-- Left: Kamar, Add-on, Penugasan Kamar Fisik -->
         <div class="lg:col-span-8 space-y-6">
             <!-- Rincian Kamar & Penetapan Unit Fisik -->
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
-                <h3 class="font-display text-lg font-bold text-primary flex items-center justify-between">
-                    <span>Kamar Dipesan & Penetapan Kamar Fisik</span>
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-gray-100 pb-3">
+                    <h3 class="font-display text-lg font-bold text-primary">Kamar Dipesan & Penetapan Kamar Fisik</h3>
                     <span class="text-xs font-sans text-gray-400 font-normal">Wajib penetapan fisik sebelum/saat check-in</span>
-                </h3>
+                </div>
 
                 @foreach($booking->bookingRooms as $br)
-                <div class="p-5 rounded-2xl border border-gray-200 bg-gray-50/70 space-y-4">
+                <div class="p-4 sm:p-5 rounded-2xl border border-gray-200 bg-gray-50/70 space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
                         <div>
                             <h4 class="font-bold text-sm text-primary">{{ $br->roomType->nama }}</h4>
                             <span class="text-xs text-gray-500">{{ $br->jumlah_kamar }} unit x {{ $br->jumlah_malam }} malam</span>
                         </div>
-                        <div class="text-right">
+                        <div class="text-left sm:text-right">
                             <span class="font-bold text-sm text-primary">Rp {{ number_format($br->subtotal, 0, ',', '.') }}</span>
                         </div>
                     </div>
@@ -84,10 +84,10 @@
                             @endif
                         </div>
 
-                        <form action="{{ route('admin.bookings.assign_room', $booking->id) }}" method="POST" class="flex items-center gap-2">
+                        <form action="{{ route('admin.bookings.assign_room', $booking->id) }}" method="POST" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                             @csrf
                             <input type="hidden" name="booking_room_id" value="{{ $br->id }}">
-                            <select name="room_id" required class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold outline-none">
+                            <select name="room_id" required class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold outline-none flex-1 sm:flex-initial">
                                 <option value="">-- Pilih Unit Kamar --</option>
                                 @foreach($availableRooms as $r)
                                 <option value="{{ $r->id }}" {{ $br->room_id == $r->id ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
                                 </option>
                                 @endforeach
                             </select>
-                            <button type="submit" class="px-3.5 py-2 rounded-xl bg-accent text-primary text-xs font-bold hover:bg-accent-dark hover:text-white transition-colors">
+                            <button type="submit" class="px-3.5 py-2 rounded-xl bg-accent text-primary text-xs font-bold hover:bg-accent-dark hover:text-white transition-colors whitespace-nowrap">
                                 Simpan Unit
                             </button>
                         </form>

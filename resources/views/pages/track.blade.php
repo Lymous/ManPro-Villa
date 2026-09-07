@@ -15,7 +15,7 @@
     </div>
 
     <!-- Search Card -->
-    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-lg mb-8">
+    <div class="bg-white p-5 sm:p-8 rounded-3xl border border-gray-200/80 shadow-lg mb-8">
         <form action="{{ route('booking.track') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
             <input type="text" 
                    name="kode_booking" 
@@ -23,7 +23,7 @@
                    required 
                    placeholder="Masukkan Kode Booking..." 
                    class="flex-1 px-4 py-3.5 rounded-2xl border border-gray-200 font-mono text-sm focus:border-accent focus:ring-1 focus:ring-accent outline-none uppercase">
-            <button type="submit" class="px-8 py-3.5 rounded-2xl bg-primary hover:bg-primary-light text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
+            <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-primary hover:bg-primary-light text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
                 <i class="fa-solid fa-magnifying-glass text-xs text-accent"></i>
                 <span>Cari Pesanan</span>
             </button>
@@ -33,7 +33,7 @@
     <!-- Search Result -->
     @if(request()->filled('kode_booking'))
         @if($booking)
-        <div class="bg-white rounded-3xl border border-gray-200/80 shadow-xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="bg-white rounded-3xl border border-gray-200/80 shadow-xl p-5 sm:p-8 relative overflow-hidden">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 mb-5">
                 <div>
                     <span class="text-xs text-gray-400 font-semibold uppercase tracking-wider block">Hasil Pencarian</span>
@@ -67,9 +67,9 @@
                 </div>
             </div>
 
-            <div class="text-right">
+            <div class="text-center sm:text-right">
                 <a href="{{ route('booking.invoice', $booking->kode_booking) }}" 
-                   class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-accent text-white hover:text-primary text-xs font-bold transition-all shadow-sm">
+                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-full bg-primary hover:bg-accent text-white hover:text-primary text-xs font-bold transition-all shadow-sm">
                     <span>Buka Halaman Tagihan & Tiket Lengkap</span>
                     <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>

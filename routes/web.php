@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PolicyController;
 use App\Http\Controllers\Admin\RoomManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CustomerBookingController;
 use App\Http\Controllers\TripayCallbackController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,8 +55,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('/bookings', [\App\Http\Controllers\CustomerBookingController::class, 'index'])->name('bookings');
-    Route::post('/profile', [\App\Http\Controllers\CustomerBookingController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/bookings', [CustomerBookingController::class, 'index'])->name('bookings');
+    Route::post('/profile', [CustomerBookingController::class, 'updateProfile'])->name('profile.update');
 });
 
 /*

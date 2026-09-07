@@ -21,15 +21,15 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <!-- Left: Formulir Data Tamu & Add-ons -->
-            <div class="lg:col-span-7 space-y-8">
+            <div class="lg:col-span-7 space-y-6 sm:space-y-8">
                 <!-- Section 1: Data Tamu -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <div class="flex items-center justify-between mb-5">
-                        <h2 class="font-display text-xl font-bold text-primary flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center">1</span>
+                <div class="bg-white p-5 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+                        <h2 class="font-display text-lg sm:text-xl font-bold text-primary flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center shrink-0">1</span>
                             Data Tamu Pemesan
                         </h2>
-                        <span class="text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-bold border border-emerald-200 inline-flex items-center gap-1.5">
+                        <span class="text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-bold border border-emerald-200 inline-flex items-center gap-1.5 self-start sm:self-auto">
                             <i class="fa-solid fa-circle-check text-emerald-600"></i> Akun: {{ auth()->user()->name }}
                         </span>
                     </div>
@@ -67,16 +67,16 @@
                 </div>
 
                 <!-- Section 2: Layanan Tambahan (Add-Ons) -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h2 class="font-display text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center">2</span>
+                <div class="bg-white p-5 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
+                    <h2 class="font-display text-lg sm:text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center shrink-0">2</span>
                         Pilihan Fasilitas Tambahan (Add-On)
                     </h2>
                     <p class="text-gray-500 text-xs mb-6">Pilih layanan ekstra untuk menambah kenyamanan acara Anda.</p>
 
                     <div class="space-y-4">
                         @foreach($addOns as $ao)
-                        <div class="p-4 rounded-2xl border border-gray-100 hover:border-accent/40 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
+                        <div class="p-3.5 sm:p-4 rounded-2xl border border-gray-100 hover:border-accent/40 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
                             <div class="flex items-start gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-accent text-lg shrink-0">
                                     <i class="fa-solid fa-plus"></i>
@@ -88,15 +88,15 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2 self-end sm:self-center">
-                                <span class="text-xs text-gray-400">Qty:</span>
+                            <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
+                                <span class="text-xs text-gray-500 font-medium">Jumlah:</span>
                                 <input type="number" 
                                        name="addons[{{ $ao->id }}]" 
                                        value="0" 
                                        min="0" 
                                        max="30" 
                                        data-price="{{ $ao->harga }}" 
-                                       class="addon-qty w-16 p-2 text-center rounded-xl border border-gray-200 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent outline-none">
+                                       class="addon-qty w-16 p-2 text-center rounded-xl border border-gray-200 text-sm font-bold focus:border-accent focus:ring-1 focus:ring-accent outline-none bg-white">
                             </div>
                         </div>
                         @endforeach
@@ -104,20 +104,20 @@
                 </div>
 
                 <!-- Section 3: Pilihan Pembayaran -->
-                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h2 class="font-display text-xl font-bold text-primary mb-2 flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center">3</span>
+                <div class="bg-white p-5 sm:p-8 rounded-3xl border border-gray-100 shadow-sm">
+                    <h2 class="font-display text-lg sm:text-xl font-bold text-primary mb-2 flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-full bg-accent/20 text-accent font-sans text-xs font-bold flex items-center justify-center shrink-0">3</span>
                         Pilih Saluran Pembayaran
                     </h2>
                     <p class="text-gray-500 text-xs mb-6">Pilih salah satu metode pembayaran di bawah ini:</p>
 
                     <div class="space-y-3">
                         <!-- QRIS -->
-                        <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
-                            <div class="flex items-center gap-3">
-                                <input type="radio" name="metode_pembayaran" value="QRIS2" checked class="accent-accent w-4 h-4">
+                        <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-start sm:items-center justify-between gap-3 transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <div class="flex items-start sm:items-center gap-3">
+                                <input type="radio" name="metode_pembayaran" value="QRIS2" checked class="accent-accent w-4 h-4 mt-0.5 sm:mt-0 shrink-0">
                                 <div>
-                                    <span class="font-bold text-sm text-primary block">QRIS (Gopay, ShopeePay, OVO, DANA, Livin, BCA Mobile)</span>
+                                    <span class="font-bold text-sm text-primary block">QRIS (Gopay, ShopeePay, OVO, DANA, Livin, BCA)</span>
                                     <span class="text-xs text-gray-500">Scan instan via seluruh aplikasi perbankan & dompet digital</span>
                                 </div>
                             </div>
@@ -126,30 +126,30 @@
 
                         <!-- Virtual Accounts -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="BCAVA" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="BCAVA" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">BCA Virtual Account</span>
                                 </div>
                             </label>
 
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="MANDIRIVA" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="MANDIRIVA" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">Mandiri Virtual Account</span>
                                 </div>
                             </label>
 
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="BRIVA" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="BRIVA" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">BRI Virtual Account</span>
                                 </div>
                             </label>
 
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="BNIVA" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="BNIVA" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">BNI Virtual Account</span>
                                 </div>
                             </label>
@@ -157,16 +157,16 @@
 
                         <!-- Convenience Store -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="ALFAMART" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="ALFAMART" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">Alfamart / Alfamidi</span>
                                 </div>
                             </label>
 
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
                                 <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="INDOMARET" class="accent-accent w-4 h-4">
+                                    <input type="radio" name="metode_pembayaran" value="INDOMARET" class="accent-accent w-4 h-4 shrink-0">
                                     <span class="font-bold text-sm text-primary">Indomaret</span>
                                 </div>
                             </label>
@@ -174,9 +174,9 @@
 
                         <!-- Transfer Manual Backup -->
                         <div class="pt-2">
-                            <label class="p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-center justify-between transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
-                                <div class="flex items-center gap-3">
-                                    <input type="radio" name="metode_pembayaran" value="manual_transfer" class="accent-accent w-4 h-4">
+                            <label class="p-3.5 sm:p-4 rounded-2xl border-2 border-gray-200 hover:border-accent cursor-pointer flex items-start sm:items-center justify-between gap-3 transition-all has-[:checked]:border-accent has-[:checked]:bg-amber-50/20">
+                                <div class="flex items-start sm:items-center gap-3">
+                                    <input type="radio" name="metode_pembayaran" value="manual_transfer" class="accent-accent w-4 h-4 mt-0.5 sm:mt-0 shrink-0">
                                     <div>
                                         <span class="font-bold text-sm text-primary block">Transfer Bank Manual (Rekening BCA Villa Bukit Bunga)</span>
                                         <span class="text-xs text-gray-500">Gunakan kode unik transfer, konfirmasi verifikasi oleh admin</span>
@@ -190,14 +190,14 @@
 
             <!-- Right: Ringkasan Biaya & Sticky Tombol -->
             <div class="lg:col-span-5">
-                <div class="sticky top-28 bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xl space-y-6">
-                    <h3 class="font-display text-xl font-bold text-primary border-b border-gray-100 pb-4">
+                <div class="lg:sticky lg:top-28 bg-white p-5 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xl space-y-6">
+                    <h3 class="font-display text-lg sm:text-xl font-bold text-primary border-b border-gray-100 pb-4">
                         Rincian Pesanan
                     </h3>
 
                     <!-- Villa Overview -->
                     <div class="flex gap-4 items-center">
-                        <img src="{{ $package->thumbnail }}" alt="{{ $package->nama }}" class="w-16 h-16 rounded-2xl object-cover">
+                        <img src="{{ $package->thumbnail }}" alt="{{ $package->nama }}" class="w-16 h-16 rounded-2xl object-cover shrink-0">
                         <div>
                             <h4 class="font-bold text-sm text-primary">{{ $package->nama }}</h4>
                             <p class="text-xs text-gray-500">{{ $package->kapasitas_min }} - {{ $package->kapasitas_max }} Tamu</p>
@@ -257,8 +257,8 @@
                             <span>Total Tagihan Reservasi</span>
                             <span class="font-display text-base text-primary" id="calc-grand-total">Rp {{ number_format($basePrice, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between items-center text-accent-dark font-bold pt-2 text-sm bg-accent/10 p-3 rounded-xl">
-                            <span>Tagihan yang Harus Dibayar Sekarang:</span>
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center text-accent-dark font-bold gap-1 text-sm bg-accent/10 p-3 rounded-xl">
+                            <span>Tagihan Bayar Sekarang:</span>
                             <span class="font-display text-lg text-accent-dark" id="calc-payable-now">Rp {{ number_format($dpAmount, 0, ',', '.') }}</span>
                         </div>
                     </div>

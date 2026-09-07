@@ -78,7 +78,7 @@
     <!-- Check-In / Check-Out Hari Ini Tables -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- List Check-in Hari Ini -->
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6">
             <h3 class="font-display text-lg font-bold text-primary mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-calendar-day text-indigo-500 text-sm"></i>
                 Jadwal Kedatangan Tamu Hari Ini
@@ -113,7 +113,7 @@
         </div>
 
         <!-- List Check-Out Hari Ini -->
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6">
             <h3 class="font-display text-lg font-bold text-primary mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-clock-rotate-left text-amber-500 text-sm"></i>
                 Jadwal Kepulangan Tamu Hari Ini
@@ -146,21 +146,23 @@
     </div>
 
     <!-- Kalender Okupansi Visual -->
-    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-        <div class="flex items-center justify-between mb-6">
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h3 class="font-display text-xl font-bold text-primary">Kalender Okupansi Villa</h3>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-primary">Kalender Okupansi Villa</h3>
                 <p class="text-xs text-gray-400 mt-0.5">Pantau jadwal menginap seluruh paket dan tanggal blokir pemeliharaan</p>
             </div>
-            <div class="flex items-center gap-4 text-xs">
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Lunas</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500"></span> DP Terbayar</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-indigo-500"></span> Check-In</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500"></span> Blokir Perawatan</span>
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span> Lunas</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0"></span> DP Terbayar</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0"></span> Check-In</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span> Blokir Perawatan</span>
             </div>
         </div>
 
-        <div id="calendar" class="p-2"></div>
+        <div class="overflow-x-auto">
+            <div id="calendar" class="p-1 sm:p-2 min-w-[620px] sm:min-w-0"></div>
+        </div>
     </div>
 </div>
 

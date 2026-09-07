@@ -27,7 +27,7 @@ class TripayCallbackController extends Controller
         $json = $request->getContent();
         $data = json_decode($json, true);
 
-        if (!$data) {
+        if (! $data) {
             return response()->json(['success' => false, 'message' => 'Invalid JSON'], 400);
         }
 
@@ -37,6 +37,7 @@ class TripayCallbackController extends Controller
             $computedSignature = hash_hmac('sha256', $json, $privateKey);
             if ($computedSignature !== $signature) {
                 Log::warning('Tripay webhook signature mismatch!');
+
                 return response()->json(['success' => false, 'message' => 'Invalid signature'], 403);
             }
         }

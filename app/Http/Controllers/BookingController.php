@@ -60,8 +60,47 @@ class BookingController extends Controller
         }
 
         if ($request->filled('tamu')) {
-            $guests = (int)$request->tamu;
+            $guests = (int) $request->tamu;
             $query->where('kapasitas_max', '>=', $guests);
+        }
+
+        if ($request->filled('min_price') && (float) $request->min_price > 0) {
+            $query->where('harga_dasar', '>=', (float) $request->min_price);
+        }
+
+        if ($request->filled('max_price') && (float) $request->max_price > 0) {
+            $query->where('harga_dasar', '<=', (float) $request->max_price);
+        }
+
+        if ($request->filled('min_kamar') && (int) $request->min_kamar > 0) {
+            $query->where('jumlah_unit', '>=', (int) $request->min_kamar);
+        }
+
+        if ($request->filled('lokasi') && $request->lokasi !== '') {
+            $lokasiKeyword = $request->lokasi === 'gapuk' ? 'Gapuk' : 'Pacet';
+            $query->where(function ($q) use ($lokasiKeyword) {
+                $q->where('deskripsi', 'like', '%'.$lokasiKeyword.'%')
+                    ->orWhere('fasilitas', 'like', '%'.$lokasiKeyword.'%')
+                    ->orWhere('nama', 'like', '%'.$lokasiKeyword.'%');
+            });
+        }
+
+        if ($request->filled('fasilitas') && $request->fasilitas !== 'semua') {
+            $fasilitasKeyword = $request->fasilitas;
+            $query->where(function ($q) use ($fasilitasKeyword) {
+                $q->where('fasilitas', 'like', '%'.$fasilitasKeyword.'%')
+                    ->orWhere('deskripsi', 'like', '%'.$fasilitasKeyword.'%')
+                    ->orWhere('nama', 'like', '%'.$fasilitasKeyword.'%');
+            });
+        }
+
+        if ($request->filled('sort')) {
+            match ($request->sort) {
+                'harga_rendah' => $query->orderBy('harga_dasar', 'asc'),
+                'harga_tinggi' => $query->orderBy('harga_dasar', 'desc'),
+                'kapasitas' => $query->orderBy('kapasitas_max', 'desc'),
+                default => null,
+            };
         }
 
         $packages = $query->get();
@@ -152,14 +191,14 @@ class BookingController extends Controller
         $isBlocked = BlockedDate::where(function ($q) use ($roomType) {
             $q->whereNull('room_type_id')->orWhere('room_type_id', $roomType->id);
         })
-        ->where(function ($q) use ($checkIn, $checkOut) {
-            $q->whereBetween('tanggal_mulai', [$checkIn, $checkOut])
-              ->orWhereBetween('tanggal_selesai', [$checkIn, $checkOut])
-              ->orWhere(function ($sub) use ($checkIn, $checkOut) {
-                  $sub->where('tanggal_mulai', '<=', $checkIn)
-                      ->where('tanggal_selesai', '>=', $checkOut);
-              });
-        })->exists();
+            ->where(function ($q) use ($checkIn, $checkOut) {
+                $q->whereBetween('tanggal_mulai', [$checkIn, $checkOut])
+                    ->orWhereBetween('tanggal_selesai', [$checkIn, $checkOut])
+                    ->orWhere(function ($sub) use ($checkIn, $checkOut) {
+                        $sub->where('tanggal_mulai', '<=', $checkIn)
+                            ->where('tanggal_selesai', '>=', $checkOut);
+                    });
+            })->exists();
 
         if ($isBlocked) {
             return back()->withInput()->with('error', 'Maaf, tanggal yang dipilih sedang dalam jadwal pemeliharaan internal atau tidak tersedia.');
@@ -175,7 +214,7 @@ class BookingController extends Controller
         $addOnItems = [];
         if (is_array($selectedAddOns)) {
             foreach ($selectedAddOns as $addonId => $qty) {
-                $qty = (int)$qty;
+                $qty = (int) $qty;
                 if ($qty > 0) {
                     $addon = AddOn::find($addonId);
                     if ($addon) {
@@ -276,7 +315,7 @@ class BookingController extends Controller
         }
 
         // 7. Notifikasi Awal
-        $waMsg = "Halo {$booking->nama_tamu}, terima kasih telah melakukan pemesanan di Villa Bukit Bunga Pacet. Kode Reservasi Anda: {$booking->kode_booking}. Total tagihan: Rp " . number_format($nominalTransfer, 0, ',', '.') . ". Silakan selesaikan pembayaran sebelum batas hold: " . $holdExpiresAt->format('d M Y H:i') . " WIB.";
+        $waMsg = "Halo {$booking->nama_tamu}, terima kasih telah melakukan pemesanan di Villa Bukit Bunga Pacet. Kode Reservasi Anda: {$booking->kode_booking}. Total tagihan: Rp ".number_format($nominalTransfer, 0, ',', '.').'. Silakan selesaikan pembayaran sebelum batas hold: '.$holdExpiresAt->format('d M Y H:i').' WIB.';
         Notification::create([
             'booking_id' => $booking->id,
             'jenis' => 'wa_konfirmasi',
@@ -329,7 +368,7 @@ class BookingController extends Controller
         $payment = $booking->payments()->latest()->first();
         if ($payment) {
             $payment->update([
-                'file_bukti' => '/storage/' . $path,
+                'file_bukti' => '/storage/'.$path,
                 'tanggal_transfer' => $request->tanggal_transfer,
                 'status' => 'menunggu_konfirmasi',
             ]);

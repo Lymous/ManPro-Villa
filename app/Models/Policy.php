@@ -24,6 +24,7 @@ class Policy extends Model
     public static function get(string $key, $default = null)
     {
         $policy = static::where('key', $key)->first();
+
         return $policy ? $policy->value : $default;
     }
 }

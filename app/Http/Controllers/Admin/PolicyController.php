@@ -11,6 +11,7 @@ class PolicyController extends Controller
     public function index()
     {
         $policies = Policy::with('updater')->get();
+
         return view('admin.policies.index', compact('policies'));
     }
 

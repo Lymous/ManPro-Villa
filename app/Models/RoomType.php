@@ -58,6 +58,6 @@ class RoomType extends Model
 
     public function getFormattedPriceAttribute()
     {
-        return 'Rp ' . number_format($this->harga_dasar, 0, ',', '.');
+        return 'Rp '.number_format($this->harga_dasar, 0, ',', '.');
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\RoomPhoto;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class RoomManagementController extends Controller
@@ -22,6 +23,7 @@ class RoomManagementController extends Controller
     public function editType($id)
     {
         $roomType = RoomType::with(['photos'])->findOrFail($id);
+
         return view('admin.rooms.edit-type', compact('roomType'));
     }
 
@@ -44,16 +46,16 @@ class RoomManagementController extends Controller
         // Jika upload file thumbnail baru
         if ($request->hasFile('thumbnail_file')) {
             $file = $request->file('thumbnail_file');
-            $filename = 'thumb_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+            $filename = 'thumb_'.time().'_'.Str::random(6).'.'.$file->getClientOriginalExtension();
             $path = $file->storeAs('packages', $filename, 'public');
-            $thumbnailPath = '/storage/' . $path;
+            $thumbnailPath = '/storage/'.$path;
 
             // Catat juga ke galeri room_photos sebagai primary
             RoomPhoto::where('room_type_id', $roomType->id)->update(['is_primary' => false]);
             RoomPhoto::create([
                 'room_type_id' => $roomType->id,
                 'file_path' => $thumbnailPath,
-                'caption' => 'Foto Utama - ' . $roomType->nama,
+                'caption' => 'Foto Utama - '.$roomType->nama,
                 'urutan' => 1,
                 'is_primary' => true,
             ]);
@@ -70,7 +72,7 @@ class RoomManagementController extends Controller
             'kapasitas_max' => $request->kapasitas_max,
             'deskripsi' => $request->deskripsi,
             'thumbnail' => $thumbnailPath,
-            'fasilitas' => !empty($fasilitasArray) ? array_values($fasilitasArray) : $roomType->fasilitas,
+            'fasilitas' => ! empty($fasilitasArray) ? array_values($fasilitasArray) : $roomType->fasilitas,
             'is_active' => $request->boolean('is_active', true),
         ]);
 
@@ -97,16 +99,16 @@ class RoomManagementController extends Controller
         // Jika upload file gambar
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $file) {
-                $filename = 'gallery_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $filename = 'gallery_'.time().'_'.Str::random(8).'.'.$file->getClientOriginalExtension();
                 $path = $file->storeAs('packages/gallery', $filename, 'public');
-                $photoPath = '/storage/' . $path;
+                $photoPath = '/storage/'.$path;
 
                 $nextOrder = RoomPhoto::where('room_type_id', $roomType->id)->max('urutan') + 1;
 
                 RoomPhoto::create([
                     'room_type_id' => $roomType->id,
                     'file_path' => $photoPath,
-                    'caption' => $request->caption ?? ($roomType->nama . ' - Galeri'),
+                    'caption' => $request->caption ?? ($roomType->nama.' - Galeri'),
                     'urutan' => $nextOrder,
                     'is_primary' => false,
                 ]);
@@ -121,7 +123,7 @@ class RoomManagementController extends Controller
             RoomPhoto::create([
                 'room_type_id' => $roomType->id,
                 'file_path' => $request->photo_url,
-                'caption' => $request->caption ?? ($roomType->nama . ' - Galeri'),
+                'caption' => $request->caption ?? ($roomType->nama.' - Galeri'),
                 'urutan' => $nextOrder,
                 'is_primary' => false,
             ]);
@@ -163,7 +165,7 @@ class RoomManagementController extends Controller
         // Hapus file fisik jika ada di disk storage
         if (str_starts_with($photo->file_path, '/storage/')) {
             $relativePath = str_replace('/storage/', '', $photo->file_path);
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($relativePath);
+            Storage::disk('public')->delete($relativePath);
         }
 
         $wasPrimary = $photo->is_primary;

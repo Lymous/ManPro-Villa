@@ -82,6 +82,7 @@ class Booking extends Model
         if ($this->check_in && $this->check_out) {
             return $this->check_in->diffInDays($this->check_out);
         }
+
         return 1;
     }
 
@@ -91,22 +92,23 @@ class Booking extends Model
             ->where('status', 'diverifikasi')
             ->sum('nominal');
         $rem = $this->total_harga - $paid;
+
         return max(0, $rem);
     }
 
     public function getFormattedTotalAttribute()
     {
-        return 'Rp ' . number_format($this->total_harga, 0, ',', '.');
+        return 'Rp '.number_format($this->total_harga, 0, ',', '.');
     }
 
     public function getFormattedDpAttribute()
     {
-        return 'Rp ' . number_format($this->nominal_dp, 0, ',', '.');
+        return 'Rp '.number_format($this->nominal_dp, 0, ',', '.');
     }
 
     public function getFormattedTransferAttribute()
     {
-        return 'Rp ' . number_format($this->nominal_transfer, 0, ',', '.');
+        return 'Rp '.number_format($this->nominal_transfer, 0, ',', '.');
     }
 
     public function getStatusLabelAttribute()

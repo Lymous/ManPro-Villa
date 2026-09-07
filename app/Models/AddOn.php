@@ -30,6 +30,6 @@ class AddOn extends Model
 
     public function getFormattedPriceAttribute()
     {
-        return 'Rp ' . number_format($this->harga, 0, ',', '.');
+        return 'Rp '.number_format($this->harga, 0, ',', '.');
     }
 }

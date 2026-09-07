@@ -25,25 +25,25 @@
         </p>
 
         <!-- Quick stats -->
-        <div class="mt-10 inline-flex flex-wrap items-center justify-center gap-6 bg-white/8 backdrop-blur-md border border-white/15 rounded-2xl px-8 py-4">
-            <div class="text-center">
-                <p class="font-display font-bold text-2xl text-white">15+</p>
-                <p class="text-white/55 text-[11px] uppercase tracking-wider">Tahun Beroperasi</p>
+        <div class="mt-10 inline-flex flex-wrap items-center justify-center gap-4 sm:gap-6 bg-white/8 backdrop-blur-md border border-white/15 rounded-2xl px-5 sm:px-8 py-4">
+            <div class="text-center min-w-[70px]">
+                <p class="font-display font-bold text-xl sm:text-2xl text-white">15+</p>
+                <p class="text-white/55 text-[10px] sm:text-[11px] uppercase tracking-wider">Tahun Beroperasi</p>
             </div>
-            <div class="w-px h-8 bg-white/20"></div>
-            <div class="text-center">
-                <p class="font-display font-bold text-2xl text-white">5.000+</p>
-                <p class="text-white/55 text-[11px] uppercase tracking-wider">Tamu Puas</p>
+            <div class="hidden sm:block w-px h-8 bg-white/20"></div>
+            <div class="text-center min-w-[70px]">
+                <p class="font-display font-bold text-xl sm:text-2xl text-white">5.000+</p>
+                <p class="text-white/55 text-[10px] sm:text-[11px] uppercase tracking-wider">Tamu Puas</p>
             </div>
-            <div class="w-px h-8 bg-white/20"></div>
-            <div class="text-center">
-                <p class="font-display font-bold text-2xl text-white">125</p>
-                <p class="text-white/55 text-[11px] uppercase tracking-wider">Kapasitas Maks</p>
+            <div class="hidden sm:block w-px h-8 bg-white/20"></div>
+            <div class="text-center min-w-[70px]">
+                <p class="font-display font-bold text-xl sm:text-2xl text-white">125</p>
+                <p class="text-white/55 text-[10px] sm:text-[11px] uppercase tracking-wider">Kapasitas Maks</p>
             </div>
-            <div class="w-px h-8 bg-white/20"></div>
-            <div class="text-center">
-                <p class="font-display font-bold text-2xl text-accent">Pacet</p>
-                <p class="text-white/55 text-[11px] uppercase tracking-wider">Mojokerto</p>
+            <div class="hidden sm:block w-px h-8 bg-white/20"></div>
+            <div class="text-center min-w-[70px]">
+                <p class="font-display font-bold text-xl sm:text-2xl text-accent">Pacet</p>
+                <p class="text-white/55 text-[10px] sm:text-[11px] uppercase tracking-wider">Mojokerto</p>
             </div>
         </div>
     </div>
@@ -73,9 +73,9 @@
                 <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80"
                      alt="Suasana Villa Bukit Bunga Pacet"
                      class="w-full rounded-3xl shadow-2xl object-cover aspect-[4/3]">
-                <div class="absolute -bottom-5 -left-5 bg-accent text-primary px-6 py-4 rounded-2xl shadow-xl">
-                    <p class="font-display font-bold text-3xl">15+</p>
-                    <p class="text-xs font-semibold uppercase tracking-wider">Tahun Beroperasi</p>
+                <div class="absolute bottom-3 left-3 sm:-bottom-5 sm:-left-5 bg-accent text-primary px-5 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-xl">
+                    <p class="font-display font-bold text-2xl sm:text-3xl">15+</p>
+                    <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Tahun Beroperasi</p>
                 </div>
             </div>
         </div>

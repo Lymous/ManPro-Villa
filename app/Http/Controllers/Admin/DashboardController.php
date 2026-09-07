@@ -7,8 +7,6 @@ use App\Models\BlockedDate;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Room;
-use App\Models\RoomType;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -76,7 +74,7 @@ class DashboardController extends Controller
         $blockedDates = BlockedDate::with('roomType')->get();
         foreach ($blockedDates as $bd) {
             $calendarEvents[] = [
-                'title' => 'BLOKIR: ' . ($bd->roomType?->nama ?? 'Seluruh Villa') . ' (' . ucfirst($bd->alasan) . ')',
+                'title' => 'BLOKIR: '.($bd->roomType?->nama ?? 'Seluruh Villa').' ('.ucfirst($bd->alasan).')',
                 'start' => $bd->tanggal_mulai->format('Y-m-d'),
                 'end' => $bd->tanggal_selesai->addDay()->format('Y-m-d'),
                 'color' => '#EF4444',

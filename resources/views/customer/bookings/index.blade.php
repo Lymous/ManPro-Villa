@@ -25,14 +25,14 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="flex items-center gap-4">
-            <div class="bg-gray-50 px-5 py-3 rounded-2xl border border-gray-100 text-center">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
+            <div class="bg-gray-50 flex-1 sm:flex-initial px-4 sm:px-5 py-3 rounded-2xl border border-gray-100 text-center min-w-[100px]">
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Pesanan Aktif</span>
-                <span class="font-display text-2xl font-bold text-primary">{{ $activeBookingsCount }}</span>
+                <span class="font-display text-xl sm:text-2xl font-bold text-primary">{{ $activeBookingsCount }}</span>
             </div>
-            <div class="bg-gray-50 px-5 py-3 rounded-2xl border border-gray-100 text-center">
+            <div class="bg-gray-50 flex-1 sm:flex-initial px-4 sm:px-5 py-3 rounded-2xl border border-gray-100 text-center min-w-[100px]">
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Selesai Menginap</span>
-                <span class="font-display text-2xl font-bold text-emerald-600">{{ $completedBookingsCount }}</span>
+                <span class="font-display text-xl sm:text-2xl font-bold text-emerald-600">{{ $completedBookingsCount }}</span>
             </div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
@@ -45,19 +45,19 @@
 
     <!-- Booking List Section -->
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h2 class="font-display text-xl font-bold text-primary">Riwayat Reservasi Villa</h2>
-            <a href="{{ route('packages.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary hover:bg-primary-light text-white text-xs font-bold transition-all shadow-xs">
+            <a href="{{ route('packages.index') }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-primary hover:bg-primary-light text-white text-xs font-bold transition-all shadow-xs w-full sm:w-auto">
                 <i class="fa-solid fa-plus text-accent text-[10px]"></i>
                 <span>Pesan Villa Baru</span>
             </a>
         </div>
 
         @forelse($bookings as $b)
-        <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
             <!-- Left Info -->
             <div class="space-y-3 flex-1">
-                <div class="flex flex-wrap items-center gap-3">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                     <span class="font-mono text-base font-bold text-primary">{{ $b->kode_booking }}</span>
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border {{ $b->status_badge_class }}">
                         {{ $b->status_label }}
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Right Price & CTA -->
-            <div class="text-left md:text-right shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100 flex flex-row md:flex-col justify-between items-center md:items-end gap-3">
+            <div class="text-left md:text-right shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100 flex flex-col sm:flex-row md:flex-col justify-between items-start sm:items-center md:items-end gap-3">
                 <div>
                     <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Total Pembayaran</span>
                     <span class="font-display text-xl font-bold text-primary">{{ $b->formatted_total }}</span>
@@ -96,7 +96,7 @@
                 </div>
 
                 <a href="{{ route('booking.invoice', $b->kode_booking) }}" 
-                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-accent text-white hover:text-primary text-xs font-bold transition-all shadow-sm">
+                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-full bg-primary hover:bg-accent text-white hover:text-primary text-xs font-bold transition-all shadow-sm">
                     <span>Buka Tagihan & Tiket</span>
                     <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>

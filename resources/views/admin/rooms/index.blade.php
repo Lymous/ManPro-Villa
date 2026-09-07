@@ -100,16 +100,16 @@
             </div>
 
             <!-- Form Tambah Unit Kamar Cepat -->
-            <form action="{{ route('admin.rooms.store_room') }}" method="POST" class="flex flex-wrap items-center gap-2">
+            <form action="{{ route('admin.rooms.store_room') }}" method="POST" class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
                 @csrf
-                <select name="room_type_id" required class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold focus:border-accent outline-none">
+                <select name="room_type_id" required class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold focus:border-accent outline-none w-full sm:w-auto">
                     @foreach($roomTypes as $rt)
                     <option value="{{ $rt->id }}">{{ $rt->nama }}</option>
                     @endforeach
                 </select>
-                <input type="text" name="nomor_kamar" required placeholder="No Kamar (cth: DLX-09)" class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold focus:border-accent outline-none w-40">
+                <input type="text" name="nomor_kamar" required placeholder="No Kamar (cth: DLX-09)" class="px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold focus:border-accent outline-none w-full sm:w-40">
                 <input type="hidden" name="status" value="tersedia">
-                <button type="submit" class="px-4 py-2 rounded-xl bg-accent text-primary text-xs font-bold hover:bg-accent-dark hover:text-white transition-colors shadow-xs">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-accent text-primary text-xs font-bold hover:bg-accent-dark hover:text-white transition-colors shadow-xs flex items-center justify-center">
                     <i class="fa-solid fa-plus mr-1"></i> Tambah Unit
                 </button>
             </form>

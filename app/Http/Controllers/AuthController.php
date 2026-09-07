@@ -15,8 +15,10 @@ class AuthController extends Controller
             if (Auth::user()->isCustomer()) {
                 return redirect()->route('customer.bookings');
             }
+
             return redirect()->route('admin.dashboard');
         }
+
         return view('auth.login');
     }
 
@@ -32,18 +34,21 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            if (!$user->is_active) {
+            if (! $user->is_active) {
                 Auth::logout();
+
                 return back()->withErrors(['email' => 'Akun Anda dinonaktifkan. Hubungi pengelola villa.']);
             }
 
             if ($user->isCustomer()) {
                 return redirect()->intended(route('customer.bookings'))
-                    ->with('success', 'Selamat datang kembali, ' . $user->name);
+                    ->with('success', 'Selamat datang kembali, '.$user->name)
+                    ->with('auth_toast', 'login');
             }
 
             return redirect()->intended(route('admin.dashboard'))
-                ->with('success', 'Selamat datang kembali, ' . $user->name);
+                ->with('success', 'Selamat datang kembali, '.$user->name)
+                ->with('auth_toast', 'login');
         }
 
         return back()->withErrors([
@@ -56,6 +61,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('customer.bookings');
         }
+
         return view('auth.register');
     }
 
@@ -84,7 +90,8 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->intended(route('customer.bookings'))
-            ->with('success', 'Pendaftaran akun berhasil! Selamat datang di Villa Bukit Bunga Pacet.');
+            ->with('success', 'Pendaftaran akun berhasil! Selamat datang di Villa Bukit Bunga Pacet.')
+            ->with('auth_toast', 'login');
     }
 
     public function logout(Request $request)
@@ -93,6 +100,8 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home')->with('success', 'Anda telah berhasil keluar.');
+        return redirect()->route('home')
+            ->with('success', 'Anda telah berhasil keluar dari akun.')
+            ->with('auth_toast', 'logout');
     }
 }

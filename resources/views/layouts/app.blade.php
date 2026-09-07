@@ -110,8 +110,46 @@
             color: #ffffff !important;
         }
 
+        /* Brand logo transitions: White on transparent hero, Dark/Black when scrolled */
+        .nav-logo-white,
+        .nav-logo-dark {
+            transition: opacity 0.4s ease, transform 0.3s ease;
+        }
+
+        #main-header.navbar-transparent .nav-logo-white {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        #main-header.navbar-transparent .nav-logo-dark {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        #main-header:not(.navbar-transparent) .nav-logo-white {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        #main-header:not(.navbar-transparent) .nav-logo-dark {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
         #main-header.navbar-transparent .nav-logo-text {
             color: #ffffff !important;
+        }
+
+        #main-header:not(.navbar-transparent) .nav-logo-text {
+            color: #0F2625 !important;
+        }
+
+        #main-header.navbar-transparent .nav-logo-sub {
+            color: #E2C882 !important;
+        }
+
+        #main-header:not(.navbar-transparent) .nav-logo-sub {
+            color: #8C6D23 !important;
         }
 
         #main-header.navbar-transparent .nav-search-btn {
@@ -142,21 +180,24 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <!-- 1. Brand Logo (Kiri) -->
-                <a href="{{ route('home') }}" class="flex items-center gap-3 group shrink-0">
-                    <img src="{{ asset('logo/logo.svg') }}" alt="Villa Bukit Bunga"
-                        class="w-10 h-10 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition-transform duration-300">
-                    <div>
+                <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink-0 min-w-0">
+                    <div class="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0">
+                        <img src="{{ asset('logo/logo-white.svg') }}" alt="Villa Bukit Bunga"
+                            class="nav-logo-white absolute inset-0 w-full h-full rounded-2xl object-cover shadow-sm group-hover:scale-105">
+                        <img src="{{ asset('logo/logo.svg') }}" alt="Villa Bukit Bunga"
+                            class="nav-logo-dark absolute inset-0 w-full h-full rounded-2xl object-cover shadow-sm group-hover:scale-105">
+                    </div>
+                    <div class="truncate flex flex-col justify-center">
                         <span
-                            class="nav-logo-text font-display font-bold text-lg sm:text-xl text-primary tracking-tight block transition-colors duration-500">Villa
+                            class="nav-logo-text font-display font-bold text-base sm:text-xl tracking-tight block truncate transition-colors duration-500 leading-tight">Villa
                             Bukit Bunga</span>
                         <span
-                            class="text-[9px] sm:text-[10px] tracking-[0.25em] text-accent font-semibold uppercase block -mt-0.5">Pacet
-                            • Mojokerto</span>
+                            class="nav-logo-sub font-sans text-[11px] sm:text-xs tracking-wider font-semibold uppercase block truncate transition-colors duration-500 mt-0.5">Pacet &bull; Mojokerto</span>
                     </div>
                 </a>
 
                 <!-- 2. Centered Menu Links (Tengah - Sesuai Kebutuhan Villa) -->
-                <nav class="hidden md:flex items-center gap-8 lg:gap-10">
+                <nav class="hidden md:flex items-center gap-6 lg:gap-10">
                     <a href="{{ route('packages.index') }}"
                         class="nav-text text-sm font-medium transition-colors {{ request()->routeIs('packages.*') ? 'text-primary font-bold border-b-2 border-primary pb-0.5' : 'text-gray-700 hover:text-primary' }}">
                         Paket Villa
@@ -180,18 +221,18 @@
                 </nav>
 
                 <!-- 3. Actions: Kotak Pencarian & Tombol Masuk Kapsul (Kanan) -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                     <!-- Tombol Search Kotak (Persis Referensi) -->
                     <button type="button" id="search-modal-btn"
-                        class="nav-search-btn w-10 h-10 rounded-xl border border-gray-300/90 text-gray-700 hover:text-primary hover:border-primary flex items-center justify-center transition-all bg-white hover:bg-gray-50 focus:outline-none"
+                        class="nav-search-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-gray-300/90 text-gray-700 hover:text-primary hover:border-primary flex items-center justify-center transition-all bg-white hover:bg-gray-50 focus:outline-none shrink-0"
                         title="Cari Paket / Cek Booking" aria-label="Cari">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        <i class="fa-solid fa-magnifying-glass text-xs sm:text-sm"></i>
                     </button>
 
                     @guest
                         <!-- Tombol Masuk Kapsul (Persis Referensi) -->
                         <a href="{{ route('login') }}"
-                            class="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-primary hover:bg-primary-light text-white text-sm font-bold tracking-wide shadow-sm hover:shadow transition-all">
+                            class="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-primary hover:bg-primary-light text-white text-xs sm:text-sm font-bold tracking-wide shadow-sm hover:shadow transition-all shrink-0">
                             Masuk
                         </a>
                     @else
@@ -315,17 +356,29 @@
                             </div>
                         </div>
 
-                        @if(auth()->user()->isCustomer())
-                            <a href="{{ route('customer.bookings') }}"
-                                class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-accent text-primary">
-                                Pesanan
-                            </a>
-                        @else
-                            <a href="{{ route('admin.dashboard') }}"
-                                class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary text-white">
-                                Admin
-                            </a>
-                        @endif
+                        <div class="flex items-center gap-1.5">
+                            @if(auth()->user()->isCustomer())
+                                <a href="{{ route('customer.bookings') }}"
+                                    class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-accent text-primary hover:bg-accent-dark hover:text-white transition-colors">
+                                    Pesanan
+                                </a>
+                            @else
+                                <a href="{{ route('admin.dashboard') }}"
+                                    class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-light transition-colors">
+                                    Admin
+                                </a>
+                            @endif
+
+                            <form action="{{ route('logout') }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                    class="p-2 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors text-xs"
+                                    title="Keluar Akun"
+                                    aria-label="Keluar Akun">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @else
                     <a href="{{ route('login') }}"
@@ -411,34 +464,8 @@
         </div>
     </div>
 
-    <!-- Flash Alert Messages -->
-    @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div
-                class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-2xl flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
-                    <span class="text-sm font-medium">{{ session('success') }}</span>
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div
-                class="bg-rose-50 border border-rose-200 text-rose-800 px-5 py-4 rounded-2xl flex items-center justify-between shadow-sm">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-xl"></i>
-                    <span class="text-sm font-medium">{{ session('error') }}</span>
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-        </div>
-    @endif
+    <!-- Floating Modern Toast Notifications -->
+    @include('partials.flash-toast')
 
     <!-- Main Content Injection -->
     <main class="flex-grow">
@@ -448,51 +475,54 @@
     <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/6285808408835?text=Halo%20Villa%20Bukit%20Bunga%2C%20saya%20ingin%20tanya%20sewa%20villa"
         target="_blank"
-        class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3.5 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 group">
-        <i class="fa-brands fa-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i>
+        class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 group">
+        <i class="fa-brands fa-whatsapp text-xl sm:text-2xl group-hover:rotate-12 transition-transform"></i>
         <span class="text-xs font-bold tracking-wide hidden sm:inline">Hubungi Villa</span>
     </a>
 
     <!-- Footer Megah Bergaya Nginapsini.id -->
-    <footer class="bg-primary text-white relative overflow-hidden mt-20 border-t border-white/5">
+    <footer class="bg-primary text-white relative overflow-hidden mt-16 sm:mt-20 border-t border-white/5">
         <div class="hero-pattern absolute inset-0 pointer-events-none opacity-40"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-12 relative z-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
                 <!-- Col 1: Brand Info -->
-                <div class="md:col-span-5">
+                <div class="sm:col-span-2 lg:col-span-5">
                     <div class="flex items-center gap-3 mb-5">
                         <img src="{{ asset('logo/logo.svg') }}" alt="Villa Bukit Bunga"
-                            class="w-11 h-11 rounded-2xl object-cover shadow-sm">
+                            class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-cover shadow-sm">
                         <div>
-                            <h3 class="font-display font-bold text-xl text-white">Villa Bukit Bunga</h3>
+                            <h3 class="font-display font-bold text-lg sm:text-xl text-white">Villa Bukit Bunga</h3>
                             <p class="text-xs text-accent uppercase tracking-widest">Pacet • Mojokerto</p>
                         </div>
                     </div>
-                    <p class="text-white/60 text-sm leading-relaxed mb-6 max-w-sm">
+                    <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6 max-w-sm">
                         Akomodasi villa keluarga dan rombongan gathering terbaik di kawasan sejuk Pacet, Mojokerto.
                         Dilengkapi aula pertemuan luas, kolam renang bersih, sound system, serta akses dekat pemandian
                         air panas.
                     </p>
                     <div class="flex items-center gap-3">
                         <a href="https://wa.me/6285808408835" target="_blank"
-                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm">
+                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm"
+                            aria-label="WhatsApp Villa">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                         <a href="https://instagram.com" target="_blank"
-                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm">
+                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm"
+                            aria-label="Instagram Villa">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
                         <a href="https://maps.google.com" target="_blank"
-                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm">
+                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent hover:text-primary transition-colors flex items-center justify-center text-sm"
+                            aria-label="Lokasi Google Maps">
                             <i class="fa-solid fa-map-location-dot"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Col 2: Navigasi Cepat -->
-                <div class="md:col-span-2">
-                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-5">Navigasi</h4>
-                    <ul class="space-y-3 text-sm text-white/70">
+                <div class="sm:col-span-1 lg:col-span-2">
+                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-4 sm:mb-5">Navigasi</h4>
+                    <ul class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-white/70">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda</a></li>
                         <li><a href="{{ route('packages.index') }}" class="hover:text-white transition-colors">Pilihan
                                 Paket (1-9)</a></li>
@@ -506,9 +536,9 @@
                 </div>
 
                 <!-- Col 3: Paket Favorit -->
-                <div class="md:col-span-2">
-                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-5">Paket Populer</h4>
-                    <ul class="space-y-3 text-sm text-white/70">
+                <div class="sm:col-span-1 lg:col-span-2">
+                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-4 sm:mb-5">Paket Populer</h4>
+                    <ul class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm text-white/70">
                         <li><a href="{{ route('packages.show', 'paket-1-family-retreat') }}"
                                 class="hover:text-white transition-colors">Paket 1 (Keluarga)</a></li>
                         <li><a href="{{ route('packages.show', 'paket-3-gathering-family-plus') }}"
@@ -521,15 +551,15 @@
                 </div>
 
                 <!-- Col 4: Lokasi & Kontak -->
-                <div class="md:col-span-3">
-                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-5">Kontak & Lokasi</h4>
-                    <ul class="space-y-3.5 text-sm text-white/70">
+                <div class="sm:col-span-2 lg:col-span-3">
+                    <h4 class="text-xs font-semibold text-accent uppercase tracking-wider mb-4 sm:mb-5">Kontak & Lokasi</h4>
+                    <ul class="space-y-3 sm:space-y-3.5 text-xs sm:text-sm text-white/70">
                         <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-location-dot text-accent mt-1 text-xs"></i>
+                            <i class="fa-solid fa-location-dot text-accent mt-1 text-xs shrink-0"></i>
                             <span>Jln. Air Panas KM. 2, Gapuk, Made, Pacet, Mojokerto, Jawa Timur</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-sm shrink-0"></i>
                             <a href="https://wa.me/6285808408835" class="hover:text-white">0858 0840 8835</a>
                         </li>
                     </ul>
@@ -538,7 +568,7 @@
 
             <!-- Bottom Copyright -->
             <div
-                class="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+                class="border-t border-white/10 mt-10 sm:mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50 text-center sm:text-left">
                 <p>&copy; {{ date('Y') }} Villa Bukit Bunga Pacet. Hak Cipta Dilindungi.</p>
                 <div class="flex items-center gap-4">
                     <span class="text-white/70">QRIS • Virtual Account Bank • Transfer</span>

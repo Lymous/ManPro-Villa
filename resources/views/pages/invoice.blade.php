@@ -3,14 +3,14 @@
 @section('title', 'Invoice Reservasi ' . $booking->kode_booking . ' - Villa Bukit Bunga')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
     <!-- Status Banner -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xl mb-8 relative overflow-hidden">
+    <div class="bg-white rounded-3xl p-5 sm:p-8 border border-gray-200/80 shadow-xl mb-8 relative overflow-hidden">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6 mb-6">
             <div>
                 <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">Kode Reservasi Anda</span>
-                <h1 class="font-display text-2xl sm:text-3xl font-bold text-primary flex items-center gap-3">
-                    {{ $booking->kode_booking }}
+                <h1 class="font-display text-xl sm:text-3xl font-bold text-primary flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <span>{{ $booking->kode_booking }}</span>
                     <button onclick="navigator.clipboard.writeText('{{ $booking->kode_booking }}'); alert('Kode booking disalin!');" 
                             class="text-accent hover:text-accent-dark text-base" title="Salin Kode Booking">
                         <i class="fa-regular fa-copy"></i>
@@ -55,9 +55,9 @@
 
                 @if($latestPayment && str_contains(strtolower($latestPayment->metode_pembayaran), 'qris'))
                     <!-- Tampilan QRIS -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 text-center">
+                    <div class="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 text-center">
                         <span class="text-xs font-bold text-gray-600 block mb-3">Scan QRIS via Dompet Digital / Mobile Banking</span>
-                        <div class="w-56 h-56 mx-auto bg-white p-3 rounded-2xl border border-gray-200 shadow-sm mb-3">
+                        <div class="w-48 h-48 sm:w-56 sm:h-56 mx-auto bg-white p-3 rounded-2xl border border-gray-200 shadow-sm mb-3">
                             <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode($latestPayment->tripay_pay_code ?? 'QRIS-VILLA-BUKIT-BUNGA') }}" 
                                  alt="QRIS Pembayaran" class="w-full h-full object-contain">
                         </div>
@@ -65,13 +65,13 @@
                     </div>
                 @elseif($latestPayment && $latestPayment->tripay_pay_code)
                     <!-- Tampilan Virtual Account / Retail Code -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                    <div class="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200">
                         <span class="text-xs text-gray-500 block mb-1">Saluran: <strong class="text-primary">{{ $latestPayment->tripay_channel ?? 'Virtual Account' }}</strong></span>
                         <span class="text-[11px] text-gray-400 block mb-2">Nomor Pembayaran / Kode VA:</span>
-                        <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 font-mono text-lg font-bold text-primary">
-                            <span>{{ $latestPayment->tripay_pay_code }}</span>
+                        <div class="flex items-center justify-between gap-2 bg-white px-3 sm:px-4 py-3 rounded-xl border border-gray-200 font-mono text-base sm:text-lg font-bold text-primary">
+                            <span class="break-all">{{ $latestPayment->tripay_pay_code }}</span>
                             <button onclick="navigator.clipboard.writeText('{{ $latestPayment->tripay_pay_code }}'); alert('Nomor VA disalin!');" 
-                                    class="text-accent hover:text-accent-dark text-sm" title="Salin Kode">
+                                    class="text-accent hover:text-accent-dark text-sm shrink-0" title="Salin Kode">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>

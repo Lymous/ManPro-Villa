@@ -95,7 +95,7 @@ return new class extends Migration
                 'check_in',
                 'selesai',
                 'batal',
-                'reschedule'
+                'reschedule',
             ])->default('menunggu_pembayaran');
             $table->dateTime('hold_expires_at')->nullable();
             $table->integer('jumlah_reschedule')->default(0);

@@ -11,19 +11,20 @@ class RoleMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      * @param  string  ...$roles
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
         $user = auth()->user();
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             auth()->logout();
+
             return redirect()->route('login')->with('error', 'Akun Anda tidak aktif.');
         }
 

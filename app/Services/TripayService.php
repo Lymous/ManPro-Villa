@@ -13,9 +13,13 @@ use Illuminate\Support\Facades\Log;
 class TripayService
 {
     protected string $apiKey;
+
     protected string $privateKey;
+
     protected string $merchantCode;
+
     protected string $apiUrl;
+
     protected string $mode;
 
     public function __construct()
@@ -36,14 +40,14 @@ class TripayService
         if ($this->apiKey && $this->apiKey !== 'DEV-MOCK-API-KEY') {
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                ])->timeout(5)->get($this->apiUrl . 'merchant/payment-channel');
+                    'Authorization' => 'Bearer '.$this->apiKey,
+                ])->timeout(5)->get($this->apiUrl.'merchant/payment-channel');
 
                 if ($response->successful() && isset($response->json()['data'])) {
                     return $response->json()['data'];
                 }
             } catch (Exception $e) {
-                Log::warning('Tripay live channel fetch failed, fallback to local: ' . $e->getMessage());
+                Log::warning('Tripay live channel fetch failed, fallback to local: '.$e->getMessage());
             }
         }
 
@@ -80,15 +84,15 @@ class TripayService
      */
     public function createClosedTransaction(Booking $booking, Payment $payment, string $method): array
     {
-        $merchantRef = 'PAY-' . $booking->kode_booking . '-' . $payment->id;
+        $merchantRef = 'PAY-'.$booking->kode_booking.'-'.$payment->id;
         $amount = (int) round($payment->nominal);
-        $signature = hash_hmac('sha256', $this->merchantCode . $merchantRef . $amount, $this->privateKey);
+        $signature = hash_hmac('sha256', $this->merchantCode.$merchantRef.$amount, $this->privateKey);
 
         $orderItems = [];
         foreach ($booking->bookingRooms as $br) {
             $orderItems[] = [
-                'sku' => 'ROOM-' . $br->room_type_id,
-                'name' => $br->roomType->nama . ' (' . $br->jumlah_malam . ' malam)',
+                'sku' => 'ROOM-'.$br->room_type_id,
+                'name' => $br->roomType->nama.' ('.$br->jumlah_malam.' malam)',
                 'price' => (int) round($br->harga_per_malam),
                 'quantity' => $br->jumlah_kamar,
             ];
@@ -96,7 +100,7 @@ class TripayService
 
         foreach ($booking->bookingAddOns as $ba) {
             $orderItems[] = [
-                'sku' => 'ADDON-' . $ba->add_on_id,
+                'sku' => 'ADDON-'.$ba->add_on_id,
                 'name' => $ba->addOn->nama,
                 'price' => (int) round($ba->harga_satuan),
                 'quantity' => $ba->jumlah,
@@ -120,8 +124,8 @@ class TripayService
         if ($this->apiKey && $this->apiKey !== 'DEV-MOCK-API-KEY') {
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                ])->timeout(8)->post($this->apiUrl . 'transaction/create', $payload);
+                    'Authorization' => 'Bearer '.$this->apiKey,
+                ])->timeout(8)->post($this->apiUrl.'transaction/create', $payload);
 
                 if ($response->successful() && isset($response->json()['data'])) {
                     $data = $response->json()['data'];
@@ -140,17 +144,17 @@ class TripayService
                     ];
                 }
             } catch (Exception $e) {
-                Log::warning('Tripay live create failed: ' . $e->getMessage());
+                Log::warning('Tripay live create failed: '.$e->getMessage());
             }
         }
 
         // Mode Simulasi / Sandbox Cerdas
-        $mockRef = 'PAY-' . strtoupper(bin2hex(random_bytes(6)));
+        $mockRef = 'PAY-'.strtoupper(bin2hex(random_bytes(6)));
         $isQris = str_contains(strtoupper($method), 'QRIS');
 
         $mockPayCode = $isQris
             ? '00020101021226590014ID.LINKAJA.WWW011893600911002120000002150000000000000005204581253033605802ID5917VILLA BUKIT BUNGA6009MOJOKERTO6304E07B'
-            : ('8808' . str_pad((string)$booking->id, 8, '0', STR_PAD_LEFT));
+            : ('8808'.str_pad((string) $booking->id, 8, '0', STR_PAD_LEFT));
 
         $mockData = [
             'reference' => $mockRef,
@@ -164,19 +168,19 @@ class TripayService
             'total_amount' => $amount + config("tripay.channels.{$method}.fee_flat", 3500),
             'pay_code' => $mockPayCode,
             'qr_string' => $isQris ? $mockPayCode : null,
-            'qr_url' => $isQris ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($mockPayCode) : null,
+            'qr_url' => $isQris ? 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='.urlencode($mockPayCode) : null,
             'status' => 'UNPAID',
             'expired_time' => time() + (24 * 3600),
             'instructions' => [
                 [
-                    'title' => 'Pembayaran melalui ' . config("tripay.channels.{$method}.name", $method),
+                    'title' => 'Pembayaran melalui '.config("tripay.channels.{$method}.name", $method),
                     'steps' => [
                         $isQris ? 'Buka aplikasi e-wallet / mobile banking Anda.' : 'Pilih menu Transfer / Virtual Account.',
-                        $isQris ? 'Pindai kode QRIS di atas.' : 'Masukkan nomor VA: ' . $mockPayCode,
+                        $isQris ? 'Pindai kode QRIS di atas.' : 'Masukkan nomor VA: '.$mockPayCode,
                         'Periksa detail nama Villa Bukit Bunga dan total tagihan.',
                         'Selesaikan pembayaran sebelum batas waktu berakhir.',
                     ],
-                ]
+                ],
             ],
         ];
 
@@ -203,12 +207,12 @@ class TripayService
         $reference = $data['reference'] ?? null;
         $status = strtoupper($data['status'] ?? '');
 
-        if (!$reference) {
+        if (! $reference) {
             return ['success' => false, 'message' => 'No reference provided'];
         }
 
         $payment = Payment::where('tripay_reference', $reference)->first();
-        if (!$payment) {
+        if (! $payment) {
             return ['success' => false, 'message' => 'Payment record not found'];
         }
 
@@ -242,7 +246,7 @@ class TripayService
             );
 
             // Notifikasi WhatsApp
-            $waMsg = "Halo {$booking->nama_tamu}, pembayaran Anda sebesar Rp " . number_format($payment->nominal, 0, ',', '.') . " untuk Villa Bukit Bunga ({$booking->kode_booking}) telah berhasil kami terima! Status reservasi: " . strtoupper($newStatus) . ". Terima kasih.";
+            $waMsg = "Halo {$booking->nama_tamu}, pembayaran Anda sebesar Rp ".number_format($payment->nominal, 0, ',', '.')." untuk Villa Bukit Bunga ({$booking->kode_booking}) telah berhasil kami terima! Status reservasi: ".strtoupper($newStatus).'. Terima kasih.';
             Notification::create([
                 'booking_id' => $booking->id,
                 'jenis' => $newStatus === 'lunas' ? 'wa_lunas' : 'wa_konfirmasi',
@@ -261,9 +265,9 @@ class TripayService
                 'tripay_status' => $status,
             ]);
 
-            return ['success' => true, 'message' => 'Payment marked as ' . $status];
+            return ['success' => true, 'message' => 'Payment marked as '.$status];
         }
 
-        return ['success' => true, 'message' => 'Ignored status: ' . $status];
+        return ['success' => true, 'message' => 'Ignored status: '.$status];
     }
 }

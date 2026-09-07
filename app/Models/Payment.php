@@ -46,7 +46,7 @@ class Payment extends Model
 
     public function getFormattedNominalAttribute()
     {
-        return 'Rp ' . number_format($this->nominal, 0, ',', '.');
+        return 'Rp '.number_format($this->nominal, 0, ',', '.');
     }
 
     public function getStatusBadgeClassAttribute()

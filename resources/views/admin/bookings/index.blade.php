@@ -44,8 +44,9 @@
             </div>
 
             <div class="sm:col-span-1">
-                <button type="submit" class="w-full h-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-colors">
+                <button type="submit" class="w-full h-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-filter"></i>
+                    <span class="sm:hidden font-semibold">Terapkan Filter</span>
                 </button>
             </div>
         </form>
