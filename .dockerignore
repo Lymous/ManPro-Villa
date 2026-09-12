@@ -1,0 +1,15 @@
+.git
+.github
+.agents
+.ai
+node_modules
+vendor
+public/hot
+public/storage
+storage/*.key
+.phpunit.result.cache
+*.docx
+*.pdf
+.env
+.env.backup
+.env.production
